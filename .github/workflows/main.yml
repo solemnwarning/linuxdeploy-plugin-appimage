@@ -48,11 +48,67 @@ jobs:
           name: AppImage i386
           path: linuxdeploy-plugin-appimage*.AppImage*
 
+  appimage-armhf:
+    name: AppImage armhf
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: armhf
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+            sudo dpkg --add-architecture armhf
+            sudo sed -i /etc/apt/sources.list -e 's/^deb /deb [arch=amd64,i386] /g'
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=armhf] http://ports.ubuntu.com/ $(lsb_release -cs)           main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=armhf] http://ports.ubuntu.com/ $(lsb_release -cs)-backports main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=armhf] http://ports.ubuntu.com/ $(lsb_release -cs)-updates   main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=armhf] http://ports.ubuntu.com/ $(lsb_release -cs)-security  main restricted universe multiverse" > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y qemu-user crossbuild-essential-armhf libc6:armhf libc6-dev:armhf libstdc++-5-dev:armhf zlib1g:armhf libfuse2:armhf libglib2.0-0:armhf
+      - name: Build AppImage
+        run: bash -ex ci/build-appimage.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: AppImage armhf
+          path: linuxdeploy-plugin-appimage*.AppImage*
+
+  appimage-aarch64:
+    name: AppImage aarch64
+    runs-on: ubuntu-18.04
+    env:
+      ARCH: aarch64
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: recursive
+      - name: Install dependencies
+        run: |
+            sudo dpkg --add-architecture arm64
+            sudo sed -i /etc/apt/sources.list -e 's/^deb /deb [arch=amd64,i386] /g'
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=arm64] http://ports.ubuntu.com/ $(lsb_release -cs)           main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=arm64] http://ports.ubuntu.com/ $(lsb_release -cs)-backports main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=arm64] http://ports.ubuntu.com/ $(lsb_release -cs)-updates   main restricted universe multiverse" > /dev/null
+            sudo tee -a /etc/apt/sources.list <<< "deb [arch=arm64] http://ports.ubuntu.com/ $(lsb_release -cs)-security  main restricted universe multiverse" > /dev/null
+            sudo apt-get update
+            sudo apt-get install -y qemu-user crossbuild-essential-arm64 libc6:arm64 libc6-dev:arm64 libstdc++-5-dev:arm64 zlib1g:arm64 libfuse2:arm64 libglib2.0-0:arm64
+      - name: Build AppImage
+        run: bash -ex ci/build-appimage.sh
+      - name: Archive artifacts
+        uses: actions/upload-artifact@v2
+        with:
+          name: AppImage aarch64
+          path: linuxdeploy-plugin-appimage*.AppImage*
+
   upload:
     name: Create release and upload artifacts
     needs:
       - appimage-x86_64
       - appimage-i386
+      - appimage-armhf
+      - appimage-aarch64
     runs-on: ubuntu-latest
     steps:
       - name: Download artifacts
