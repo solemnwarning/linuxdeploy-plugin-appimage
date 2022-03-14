@@ -35,9 +35,11 @@ elif [ "$ARCH" == "i386" ]; then
 elif [ "$ARCH" == "armhf" ]; then
     EXTRA_CMAKE_ARGS=("-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/toolchains/arm-linux-gnueabihf.cmake")
     QEMU="qemu-arm"
+    export PATH="$REPO_ROOT/ci/cross-ldd:$PATH"
 elif [ "$ARCH" == "aarch64" ]; then
     EXTRA_CMAKE_ARGS=("-DCMAKE_TOOLCHAIN_FILE=$REPO_ROOT/cmake/toolchains/aarch64-linux-gnu.cmake")
     QEMU="qemu-aarch64"
+    export PATH="$REPO_ROOT/ci/cross-ldd:$PATH"
 else
     echo "Architecture not supported: $ARCH" 1>&2
     exit 1
@@ -49,7 +51,7 @@ make -j$(nproc)
 
 make install DESTDIR=AppDir
 
-LD_ARCH="x86_64"
+LD_ARCH="$ARCH"
 [ "$ARCH" == "i386" ] && LD_ARCH="i386"
 
 AIK_ARCH="$ARCH"
