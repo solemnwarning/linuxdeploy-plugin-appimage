@@ -51,7 +51,7 @@ make -j$(nproc)
 
 make install DESTDIR=AppDir
 
-LD_ARCH="$ARCH"
+LD_ARCH="x86_64"
 [ "$ARCH" == "i386" ] && LD_ARCH="i386"
 
 AIK_ARCH="$ARCH"
