@@ -51,13 +51,15 @@ make -j$(nproc)
 
 make install DESTDIR=AppDir
 
-LD_ARCH="x86_64"
-[ "$ARCH" == "i386" ] && LD_ARCH="i386"
+LD_ARCH="$ARCH"
+# [ "$ARCH" == "i386" ] && LD_ARCH="i386"
 
 AIK_ARCH="$ARCH"
 [ "$ARCH" == "i386" ] && AIK_ARCH="i686"
 
-wget https://github.com/TheAssassin/linuxdeploy/releases/download/continuous/linuxdeploy-"$LD_ARCH".AppImage
+# TODO: Switch back to GH
+wget https://solemnwarning.net/junk/linuxdeploy-"$LD_ARCH".AppImage
+# wget https://github.com/TheAssassin/linuxdeploy/releases/download/continuous/linuxdeploy-"$LD_ARCH".AppImage
 chmod +x linuxdeploy-"$LD_ARCH".AppImage
 
 # bundle appimagetool
@@ -75,10 +77,10 @@ export UPD_INFO="gh-releases-zsync|linuxdeploy|linuxdeploy-plugin-appimage|conti
 
 # deploy linuxdeploy-plugin-appimage
 sed -i 's|AI\x02|\x00\x00\x00|' linuxdeploy-"$LD_ARCH".AppImage
-./linuxdeploy-"$LD_ARCH".AppImage --appimage-extract-and-run \
+$QEMU ./linuxdeploy-"$LD_ARCH".AppImage --appimage-extract-and-run \
      --appdir AppDir -d "$REPO_ROOT"/resources/linuxdeploy-plugin-appimage.desktop \
     -i "$REPO_ROOT"/resources/linuxdeploy-plugin-appimage.svg
 
-AppDir/AppRun --appdir AppDir
+$QEMU AppDir/AppRun --appdir AppDir
 
 mv linuxdeploy-plugin-appimage*.AppImage* "$OLD_CWD"/
