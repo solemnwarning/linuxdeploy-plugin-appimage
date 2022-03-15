@@ -67,7 +67,8 @@ wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appima
 
 chmod +x appimagetool-"$AIK_ARCH".AppImage
 
-sed -i 's/AI\x02/\x00\x00\x00/' {appimagetool,linuxdeploy}*.AppImage
+# TODO: What does this even do, besides breaking sometimes?
+# sed -i 's/AI\x02/\x00\x00\x00/' {appimagetool,linuxdeploy}*.AppImage
 
 $QEMU ./appimagetool-"$AIK_ARCH".AppImage --appimage-extract
 mv squashfs-root/ AppDir/appimagetool-prefix/
@@ -76,7 +77,8 @@ ln -s ../../appimagetool-prefix/AppRun AppDir/usr/bin/appimagetool
 export UPD_INFO="gh-releases-zsync|linuxdeploy|linuxdeploy-plugin-appimage|continuous|linuxdeploy-plugin-appimage-$ARCH.AppImage"
 
 # deploy linuxdeploy-plugin-appimage
-sed -i 's|AI\x02|\x00\x00\x00|' linuxdeploy-"$LD_ARCH".AppImage
+# TODO: What does this even do, besides breaking sometimes?
+# sed -i 's|AI\x02|\x00\x00\x00|' linuxdeploy-"$LD_ARCH".AppImage
 $QEMU ./linuxdeploy-"$LD_ARCH".AppImage --appimage-extract-and-run \
      --appdir AppDir -d "$REPO_ROOT"/resources/linuxdeploy-plugin-appimage.desktop \
     -i "$REPO_ROOT"/resources/linuxdeploy-plugin-appimage.svg
